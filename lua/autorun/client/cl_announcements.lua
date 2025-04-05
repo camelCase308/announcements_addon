@@ -50,6 +50,9 @@ local function CreateCenterAnnouncement(message)
         ANNOUNCEMENT.Panel:Remove()
     end
 
+    -- Play UI sound
+    surface.PlaySound("garrysmod/ui_click.wav")
+
     surface.CreateFont("AnnouncementFont", {
         font = "Roboto Bold",
         size = 46,
