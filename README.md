@@ -1,49 +1,29 @@
-# Garry's Mod Announcements Addon
+# README.md
 
-A simple yet powerful announcements system for Garry's Mod servers with fancy chat effects and ULX integration.
+# Announcements Addon
 
-## Features
-
-- Custom chat announcements with fade effects
-- Color transitions (black to blue) with 5-second duration
-- Multiple command aliases (!announce, !a, /announce, !broadcast)
-- ULX integration (if available)
-- Permission-based system
-- Network-optimized
+This addon allows players to make announcements in the game using a simple chat command.
 
 ## Installation
 
-1. Download the addon
-2. Place it in your server's `garrysmod/addons` folder
-3. Restart your server
+1. Download the `announcements_addon` folder.
+2. Place the `announcements_addon` folder in your `garrysmod/addons` directory.
 
 ## Usage
 
-### Standard Commands
-- `!announce <message>` - Send an announcement
-- `!a <message>` - Short version
-- `/announce <message>` - Slash command version
-- `!broadcast <message>` - Alternative command
+To make an announcement, players can use the following chat command:
 
-### ULX Commands
-If ULX is installed:
-- `ulx announce <message>` - Send announcement through ULX
-- Access through ULX menu system
+```
+!announce <message>
+```
 
-## Permissions
+Replace `<message>` with the text you want to announce. All players in the game will see the announcement.
 
-- Requires admin status by default
-- Configurable through `announcement_config.lua`
-- ULX permissions if ULX is installed
+## Dependencies
 
-## Configuration
-
-Edit `lua/autorun/shared/announcement_config.lua` to customize:
-- Command prefixes
-- Colors
-- Permission groups
-- Announcement prefix
+- Garry's Mod (GMod) must be installed and running.
+- Ensure that you have the necessary permissions to use chat commands.
 
 ## License
 
-MIT License - Feel free to use and modify as needed.
+This project is licensed under the MIT License. See the LICENSE file for more details.
