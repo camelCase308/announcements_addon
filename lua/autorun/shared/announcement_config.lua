@@ -1,4 +1,7 @@
 ANNOUNCEMENT = ANNOUNCEMENT or {}
+ANNOUNCEMENT.Command = "!announce"
+ANNOUNCEMENT.DefaultStartColor = Color(0, 0, 255) -- Blue
+ANNOUNCEMENT.DefaultEndColor = Color(0, 0, 0)    -- Black
 
 -- Configuration
 ANNOUNCEMENT.Prefix = "[Announcement]"
