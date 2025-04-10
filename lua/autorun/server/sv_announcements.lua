@@ -1,43 +1,71 @@
+local ADDON = ADDON or {}
+ADDON.Commands = {}
+
+-- Network setup
 util.AddNetworkString("SendAnnouncement")
 
-hook.Add("Initialize", "AnnouncementsInit", function()
-    MsgC(Color(0, 255, 0), "\n[Announcements] Addon initialized!\n")
-    MsgC(Color(255, 255, 0), "Available commands: !announce, !a, /announce, !broadcast\n\n")
-end)
+-- Command registration system
+function ADDON:RegisterCommand(cmd, callback)
+    self.Commands[cmd:lower()] = callback
+end
 
--- Remove conflicting configuration
-ANNOUNCEMENT = ANNOUNCEMENT or {}
+-- Message broadcaster
+function ADDON:Broadcast(message, sender)
+    if not message or message:Trim() == "" then return false end
+    
+    net.Start("SendAnnouncement")
+    net.WriteString(message)
+    net.Broadcast()
+    
+    MsgC(Color(0, 255, 0), 
+        string.format("[Announcements] %s: %s\n", 
+        IsValid(sender) and sender:Nick() or "Console",
+        message))
+        
+    return true
+end
+
+-- Register default announcement command
+local function HandleAnnouncement(ply, message)
+    if not IsValid(ply) or not ply:IsAdmin() then
+        if IsValid(ply) then
+            ply:ChatPrint("You don't have permission to use this command!")
+        end
+        return false
+    end
+    
+    return ADDON:Broadcast(message, ply)
+end
+
+-- Register all command variants
+local commands = {
+    "!announce",
+    "!a",
+    "/announce",
+    "!broadcast"
+}
+
+for _, cmd in ipairs(commands) do
+    ADDON:RegisterCommand(cmd, HandleAnnouncement)
+end
 
 -- Command handler
 hook.Add("PlayerSay", "HandleAnnouncementCommand", function(ply, text)
     local args = string.Split(text, " ")
     local cmd = args[1]:lower()
     
-    local validCommands = {
-        ["!announce"] = true,
-        ["!a"] = true,
-        ["/announce"] = true,
-        ["!broadcast"] = true
-    }
-    
-    if validCommands[cmd] then
-        if not ply:IsAdmin() then
-            ply:ChatPrint("You don't have permission to use this command!")
-            return ""
-        end
-        
+    if ADDON.Commands[cmd] then
         table.remove(args, 1)
         local message = table.concat(args, " ")
         
-        if #message > 0 then
-            net.Start("SendAnnouncement")
-            net.WriteString(message)
-            net.Broadcast()
-            
-            print(string.format("[Announcements] %s used %s: %s", 
-                ply:Nick(), cmd, message))
+        if ADDON.Commands[cmd](ply, message) then
+            return ""
         end
-        
-        return ""
     end
+end)
+
+-- Initialization
+hook.Add("Initialize", "AnnouncementsInit", function()
+    MsgC(Color(0, 255, 0), "\n[Announcements] Addon initialized!\n")
+    MsgC(Color(255, 255, 0), "Available commands: " .. table.concat(commands, ", ") .. "\n\n")
 end)

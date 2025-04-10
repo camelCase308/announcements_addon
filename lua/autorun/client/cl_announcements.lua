@@ -3,48 +3,6 @@ ANNOUNCEMENT = ANNOUNCEMENT or {}
 ANNOUNCEMENT.Color = Color(0, 150, 255) -- Color for the prefix
 ANNOUNCEMENT.Prefix = "[Announcement]"
 
-local function CreateFadingAnnouncement(message)
-    local startTime = CurTime()
-    local duration = 5 -- Duration in seconds
-    local chatPanel = nil
-    
-    -- Find the chat panel
-    timer.Simple(0.1, function()
-        for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
-            if v:GetClassName() == "RichText" then
-                chatPanel = v
-                break
-            end
-        end
-        
-        if IsValid(chatPanel) then
-            local originalPaint = chatPanel.Paint
-            local lastLine = chatPanel:GetNumLines() - 1
-            
-            chatPanel.Paint = function(self, w, h)
-                originalPaint(self, w, h)
-                
-                local elapsed = CurTime() - startTime
-                local progress = elapsed / duration
-                local alpha = math.Clamp(1 - progress, 0, 1)
-                
-                -- Calculate color based on progress
-                local r = Lerp(progress, 0, 0)   -- Black to Blue transition
-                local g = Lerp(progress, 0, 0)
-                local b = Lerp(progress, 0, 255)
-                
-                chatPanel:SetFontInternal("ChatFont")
-                chatPanel:SetTextColor(Color(r, g, b, 255 * alpha))
-                
-                if elapsed >= duration then
-                    chatPanel.Paint = originalPaint
-                    chatPanel:RemoveLine(lastLine)
-                end
-            end
-        end
-    end)
-end
-
 local function CreateCenterAnnouncement(message)
     if IsValid(ANNOUNCEMENT.Panel) then
         ANNOUNCEMENT.Panel:Remove()
@@ -127,12 +85,19 @@ local function CreateCenterAnnouncement(message)
     end
 end
 
-local startColor = ANNOUNCEMENT.DefaultStartColor
-local endColor = ANNOUNCEMENT.DefaultEndColor
+local function DisplayAnnouncement(message)
+    chat.AddText(
+        Color(255, 100, 100), "[Announcement] ",
+        Color(255, 255, 255), message
+    )
+end
 
-net.Receive("UpdateAnnouncementColors", function()
-    startColor = net.ReadColor()
-    endColor = net.ReadColor()
+net.Receive("SendAnnouncement", function()
+    local message = net.ReadString()
+    if message then
+        DisplayAnnouncement(message)
+        surface.PlaySound("buttons/button15.wav")
+    end
 end)
 
 net.Receive("SendAnnouncement", function()
@@ -152,9 +117,8 @@ net.Receive("SendAnnouncement", function()
     bg.Paint = function(self, w, h)
         timeElapsed = timeElapsed + FrameTime()
         local progress = timeElapsed / displayTime
-        local currentColor = LerpColor(progress, startColor, endColor)
         
-        draw.SimpleText(message, "DermaLarge", w/2, h/2, currentColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(message, "DermaLarge", w/2, h/2, ANNOUNCEMENT.Color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         
         if progress >= 1 then
             announcement:Remove()
