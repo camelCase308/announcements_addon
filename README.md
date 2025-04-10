@@ -4,50 +4,54 @@ A sleek and modern announcement system for Garry's Mod servers that displays mes
 
 ## Features
 
-- Stylish centered announcements with gradient effects
-- Smooth color transitions from blue to black
-- Professional UI sounds for notifications
-- Chat integration with color fade effects
+- Modular design with client/server separation
+- Command registration system with multiple aliases
+- Protected configuration system
+- Enhanced permission management
+- Gradient color support with real-time updates
+- Sound notification system
+- Comprehensive logging system
 - ULX integration (if installed)
-- Admin permission system
 
 ## Commands
 
-- `!announce <message>` - Basic chat command
-- `!a <message>` - Short version
-- `/announce <message>` - Slash command version
+Default command aliases:
+- `!announce <message>` - Primary command
+- `!a <message>` - Short alias
+- `/announce <message>` - Slash command
 - `!broadcast <message>` - Alternative command
-- `ulx announce <message>` - ULX version (if ULX is installed)
+- `ulx announce <message>` - ULX version (if installed)
 
-## Permissions
+## Configuration
 
-- Requires admin status by default
-- Works with ULX permission system when available
-- Configurable for specific user groups
+The addon uses a centralized configuration system in `lua/autorun/shared/announcement_config.lua`:
 
-## Visual Features
-
-- Sleek grey gradient panel
-- Professional typography with Roboto Bold font
-- Text glow effects
-- Smooth fade-in/fade-out transitions
-- Chat color transitions
+```lua
+ANNOUNCEMENT = {
+    Network      - Network string configuration
+    Visual       - Colors, prefixes, and gradient settings
+    Sound        - Notification sound settings
+    Commands     - Command aliases and prefixes
+    Permissions  - Access control settings
+    Logging      - Console output configuration
+}
+```
 
 ## Installation
 
 1. Copy the addon to your server's addons folder
 2. Restart your server or change map
-3. Configure permissions if needed
+3. Edit configuration if needed (optional)
+4. Ensure proper permissions are set
 
-## Configuration
+## Technical Details
 
-Edit `lua/autorun/shared/announcement_config.lua` to customize:
-- Command prefixes
-- Colors and effects
-- Duration settings
-- Permission levels
+- Protected configuration system prevents runtime modifications
+- Network optimization for client/server communication
+- Modular codebase for easy maintenance
+- Enhanced error handling and validation
 
 ## Credits
 
 Created by camelCase
-Version 1.0
+Version 2.0
