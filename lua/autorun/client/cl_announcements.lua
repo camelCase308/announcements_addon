@@ -127,8 +127,41 @@ local function CreateCenterAnnouncement(message)
     end
 end
 
+local startColor = ANNOUNCEMENT.DefaultStartColor
+local endColor = ANNOUNCEMENT.DefaultEndColor
+
+net.Receive("UpdateAnnouncementColors", function()
+    startColor = net.ReadColor()
+    endColor = net.ReadColor()
+end)
+
 net.Receive("SendAnnouncement", function()
     local message = net.ReadString()
-    chat.AddText(ANNOUNCEMENT.Color, ANNOUNCEMENT.Prefix, Color(255, 255, 255), " " .. message)
-    CreateCenterAnnouncement(message)
+    
+    local announcement = vgui.Create("DNotify")
+    announcement:SetPos(ScrW() * 0.3, 10)
+    announcement:SetSize(ScrW() * 0.4, 50)
+    
+    local bg = announcement:Add("DPanel")
+    bg:Dock(FILL)
+    bg:SetBackgroundColor(Color(0, 0, 0, 0))
+    
+    local timeElapsed = 0
+    local displayTime = 5
+    
+    bg.Paint = function(self, w, h)
+        timeElapsed = timeElapsed + FrameTime()
+        local progress = timeElapsed / displayTime
+        local currentColor = LerpColor(progress, startColor, endColor)
+        
+        draw.SimpleText(message, "DermaLarge", w/2, h/2, currentColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
+        if progress >= 1 then
+            announcement:Remove()
+        end
+        
+        return true
+    end
+    
+    announcement:SetLife(displayTime)
 end)
